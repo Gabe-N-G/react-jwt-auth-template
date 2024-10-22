@@ -13,8 +13,28 @@ const signup = async (formData) => {
   }
 };
 
+const signin = async (userData) => {
+  try {
+    const res = await axios.post(`${BACKEND_URL}/users/signin`,userData)
+    console.log(res.data)
+
+    if (res.data.error){
+      throw new Error(res.data.error)
+    }
+
+    if(res.data.token){
+      const user = JSON.parse(atob(res.data.token.split('.')[1]))
+      return user
+    }
+
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
 export { // or put export next to each variable
-  signup,
+  signup, signin
 };
 
 // ~with fetch~
