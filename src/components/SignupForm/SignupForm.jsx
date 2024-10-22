@@ -2,15 +2,17 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { signup } from '../../services/authService';
 
-const SignupForm = (props) => {
-  const navigate = useNavigate();
+const SignupForm = ({setUser}) => {
   const [message, setMessage] = useState(['']);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
     passwordConf: '',
   });
+
+  const navigate = useNavigate()
 
   const updateMessage = (msg) => { //usually used in error handling, so we can send error codes to the front end.
     setMessage(msg);
@@ -24,9 +26,9 @@ const SignupForm = (props) => {
 //chad raul handlechange
 //use prev state and destructuring
 //prev state because calls are async and may mess it up.
+
 const handleChange = (e) => {
     const {name, value} = e.target
-
     setFormData((prevFormData)=>({
         ...prevFormData,
         [name]: value,
@@ -36,13 +38,14 @@ const handleChange = (e) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("sumbitted")
     try {
-        const user = await authService.signin(formData); // TODO: build signin service function
-
-        props.setUser(user);
+        const userResponse = await signup(formData); // TODO: localstorage
+        console.log(userResponse)
+        setUser(userResponse.user);
         navigate('/');
     } catch (error) {
-        updateMessage(err.message);
+        updateMessage(error.message);
     }
     updateMessage('');
     console.log(formData); // this line will print the form data to the console
