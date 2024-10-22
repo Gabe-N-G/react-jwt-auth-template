@@ -6,6 +6,9 @@ const signup = async (formData) => {
   try {
     const res = await axios.post(`${BACKEND_URL}/users/signup`,formData)
     console.log(res.data)
+
+    localStorage.setItem('token',res.data.token)
+
     return res
   } catch (err) {
     console.log(err);
@@ -23,7 +26,9 @@ const signin = async (userData) => {
     }
 
     if(res.data.token){
-      const user = JSON.parse(atob(res.data.token.split('.')[1]))
+      localStorage.setItem('token',res.data.token)
+
+      const user = JSON.parse(atob(res.data.token.split('.')[1])) //atob is decryption native to js. res.data.token instead of json.token
       return user
     }
 
@@ -33,8 +38,20 @@ const signin = async (userData) => {
   }
 }
 
+const getUser = () => {
+  const token = localStorage.getItem('token')
+  if (!token) return null
+  const user = JSON.parse(atob(token.split('.')[1]))
+  return user
+}
+
+const signOut = () => {
+  localStorage.removeItem('token');
+}
+
+
 export { // or put export next to each variable
-  signup, signin
+  signup, signin, getUser,signOut
 };
 
 // ~with fetch~
